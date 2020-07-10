@@ -15,7 +15,7 @@ class General(BaseDialog):
 
     def create_super_secret_dialog(self):
         from .secret import Secret
-        self.master.panels['Secret'] = Secret(self.master)
+        self.master.panels['Secret'] = Secret(self.master, self.config.parser)
         self.master.panel_switcher.insert(999, 'Secret')
         #self.master.panel_switcher.select_clear(0,9999)
         #self.master.panel_switcher.selection_set(0,0)
