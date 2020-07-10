@@ -1,0 +1,20 @@
+
+
+
+
+Feature					MultiMC	ATLauncher	Curseforge	TechnicLauncher	STLauncher	Minefish
+Download Curse packs			Yes	Yes		Yes		No		No		Yes
+Browse Curse packs			Yes	No		Yes		No		No		Yes
+Download Technic packs			No	No		No		Yes		No		Yes
+Broswe Technic packs			No	No		No		Not really	No		Yes
+Download ATL packs			No	Yes		No		No		No		Yes
+Browse ATLauncher packs			No	Yes		No		No		No		Yes
+Download SFPDS packs			No	No		No		No		No		Yes
+D/l modpacks directly off servers	No	No		No		No		No		Yes (I am super proud of this feature)
+Publish modpacks			Sorta	Yes		Yes		Yes		Duh		Yes
+Publish modpacks w/o hosting a server	No	Yes		Yes		No		No		In most cases
+Publish modpacks w/o rehosting the mods	No	Yes		Yes		In most cases	?		YES
+Update modpacks you have published	No	Yes		Yes		Yes		Yes		Yes
+Update modpacks w/o editing config filesNo	No		No		No		No		Yes
+Host servers from within the launcher	No	Yes		No		No		No		Yes
+
