@@ -52,7 +52,9 @@ class Downloader(threading.Thread):
         self.overall_progressbar.config(mode='determinate', max=len(self.queue), value=0)
         while self.queue:
             outfile, *fmt = self.queue.pop()
-            outpath = os.path.join(self.outputdir, outfile)
+            if outfile is None:
+                pass
+            outpath = os.path.join(self.outputdir, outfile.replace('/',os.sep))
             with open(outpath+'.part', 'ab') as fout:
                 headers = {'User-Agent': 'Swordfish-Launcher 1.0'}
                 if fout.tell() != 0:
@@ -60,11 +62,13 @@ class Downloader(threading.Thread):
                     expected_code = 206
                 else:
                     expected_code = 200
-                self.client.request('GET', self.urlformat.format(*fmt, filename=outfile.replace(os.sep, '/')),
+                self.client.request('GET', self.urlformat.format(*fmt, filename=outfile),
                                     headers=headers)
                 with self.client.getresponse() as resp:
                     if resp.code != expected_code:
                         self.failed_downloads[outfile] = resp.code
+                        if resp.getheader('Connection', '').lower() == 'keep-alive':
+                            resp.read()
                         continue
                     download(resp, fout, self.download_progressbar)
             os.rename(outpath+'.part', outpath)
@@ -91,12 +95,7 @@ class ZipDownloader(Downloader):
             with zipfile.ZipFile(ftmp) as zf:
                 # I would just use zf.extractall() but I wanted the progress bar.
                 zf.extractall()
-                files=[]
-                for name in zf.namelist():
-                    if name.endswith('/'):
-                        os.makedirs(os.path.join(self.destpath, file), exist_ok=True)
-                    else:
-                        files.append(zf.getinfo(name))
+                files=[zi for zi in zf.infolist() if not zi.isdir()]
 
                 self.progressbar.config(mode='determinate', value=0, max=sum(zi.file_size for zi in files))
                 for member in files:
@@ -125,9 +124,8 @@ class ZipDownloader(Downloader):
                     ### END COPY PASTE FROM zipfile.py ###
 
                     os.makedirs(os.path.dirname(targetpath), exist_ok=True)
-                    if not member.isdir():
-                        with open(targetpath, 'wb') as fout, zf.open(member) as fin:
-                            data = fin.read(1024*1024)
-                            self.progressbar.step(len(data))
-                            fout.write(data)
+                    with open(targetpath, 'wb') as fout, zf.open(member) as fin:
+                        data = fin.read(1024*1024)
+                        self.progressbar.step(len(data))
+                        fout.write(data)
 

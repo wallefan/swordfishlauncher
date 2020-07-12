@@ -2,11 +2,17 @@ from abc import ABC, abstractmethod
 import os
 import urllib.request
 import io
+import os
 
 class AbstractModpack(ABC):
+    __slots__=('title','description')
     @abstractmethod
-    def __init__(self, path):
-        self._on_disk_path = path
+    def __init__(self, title, summary, description):
+        self.title = title
+        self.summary = summary
+        self.description = description
+        self._on_disk_path = os.path.expanduser('~/.local/share/minefish/'+title)
+        os.makedirs(self._on_disk_path, exist_ok=True)
 
     def _getimage(self, imagetype):
         """
@@ -22,7 +28,7 @@ class AbstractModpack(ABC):
         if candidates:
             return Image.open(os.path.join(self._on_disk_path, candidates[0]))
         else:
-            image_bytes, image_extension = self._get_image_data(imagetype)
+            image_bytes, image_extension = self._get_image_bytes(imagetype)
             if not image_bytes:
                 return None
             image = Image.open(io.BytesIO(image_bytes))  # if this fails we shouldn't be saving it to disk anyway.
@@ -66,6 +72,7 @@ class AbstractModpack(ABC):
         :return: An iterator following the sfpds CSV format.
         """
 
-
     def getVersions(self):
         return []
+
+
